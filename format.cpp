@@ -25,7 +25,7 @@
 #include "structmember.h"
 
 #include "bases.h"
-#include "locale.h"
+#include "locale2.h"
 #include "format.h"
 #include "macros.h"
 #include "dateformat.h"

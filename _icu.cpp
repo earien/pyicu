@@ -27,7 +27,7 @@
 #include "common.h"
 #include "errors.h"
 #include "bases.h"
-#include "locale.h"
+#include "locale2.h"
 #include "transliterator.h"
 #include "iterators.h"
 #include "format.h"

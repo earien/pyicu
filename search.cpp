@@ -25,7 +25,7 @@
 #include "structmember.h"
 
 #include "bases.h"
-#include "locale.h"
+#include "locale2.h"
 #include "collator.h"
 #include "iterators.h"
 #include "search.h"

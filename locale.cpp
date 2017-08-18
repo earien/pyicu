@@ -36,7 +36,7 @@
 #include "structmember.h"
 
 #include "bases.h"
-#include "locale.h"
+#include "locale2.h"
 #include "macros.h"
 #include "unicodeset.h"
 
