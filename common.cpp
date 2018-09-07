@@ -27,6 +27,7 @@
 #include <datetime.h>
 
 #include <unicode/ustring.h>
+#include <unicode/utf16.h>
 
 #include "bases.h"
 #include "macros.h"
@@ -171,8 +172,7 @@ EXPORT PyObject *PyUnicode_FromUnicodeString(const UChar *utf16, int len16)
         Py_INCREF(Py_None);
         return Py_None;
     }
-
-#if PY_VERSION_HEX < 0x03030000
+#if PY_VERSION_HEX < 0x03030000 || defined(PYPY_VERSION)
     else if (sizeof(Py_UNICODE) == sizeof(UChar))
         return PyUnicode_FromUnicode((const Py_UNICODE *) utf16, len16);
     else
@@ -537,7 +537,7 @@ EXPORT UDate PyObject_AsUDate(PyObject *object)
             Py_XDECREF(ordinal);
         }
     }
-    
+
     PyErr_SetObject(PyExc_TypeError, object);
     throw ICUException();
 }
@@ -851,7 +851,7 @@ int __parseArg(PyObject *arg, const char *types, ...)
                 Py_DECREF(tuple);
             }
         } tuple_arg(arg);
-            
+
         return _parseArgs(tuple_arg.tuple, 1, types, list);
     }
 #else
@@ -890,7 +890,7 @@ int _parseArgs(PyObject **args, int count, const char *types, ...)
 #else
         PyObject *arg = args[i];
 #endif
-        
+
         switch (types[i]) {
           case 'c':           /* string */
           case 'k':           /* string and size */
@@ -972,7 +972,7 @@ int _parseArgs(PyObject **args, int count, const char *types, ...)
           {
               classid id = va_arg(list, classid);
               PyTypeObject *type = va_arg(list, PyTypeObject *);
-              
+
               if (PySequence_Check(arg))
               {
                   if (PySequence_Length(arg) > 0)
@@ -1073,7 +1073,7 @@ int _parseArgs(PyObject **args, int count, const char *types, ...)
 #endif
               break;
           }
-            
+
           case 'c':           /* string */
           {
               char **c = va_arg(list, char **);
@@ -1422,7 +1422,7 @@ UnicodeString fromUChar32(UChar32 c)
     return UnicodeString(c);
 #endif
 }
-    
+
 
 void _init_common(PyObject *m)
 {

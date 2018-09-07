@@ -1,5 +1,5 @@
 /* ====================================================================
- * Copyright (c) 2004-2011 Open Source Applications Foundation.
+ * Copyright (c) 2004-2018 Open Source Applications Foundation.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -199,6 +199,20 @@ PyObject *wrap_##name(icuClass *object, int flags)                        \
     Py_RETURN_NONE;                                                       \
 }
 
+#define DECLARE_BY_VALUE_TYPE(name, t_name, base, icuClass, init)     \
+void t_name##_dealloc(t_name *self)                                   \
+{                                                                     \
+    if (self->flags & T_OWNED)                                        \
+        delete self->object;                                          \
+    self->object = NULL;                                              \
+    Py_TYPE(self)->tp_free((PyObject *) self);                        \
+}                                                                     \
+DECLARE_TYPE(name, t_name, base, icuClass, init, t_name##_dealloc)    \
+PyObject *wrap_##name(const icuClass &object)                         \
+{                                                                     \
+    return wrap_##name(new icuClass(object), T_OWNED);                \
+}
+
 
 #define DECLARE_STRUCT(name, t_name, icuStruct, init, dealloc)          \
 static PyObject *t_name##_new(PyTypeObject *type,                       \
@@ -217,7 +231,7 @@ PyTypeObject name##Type_ = {                                                \
     /* tp_name            */   "icu."#name,                                 \
     /* tp_basicsize       */   sizeof(t_name),                              \
     /* tp_itemsize        */   0,                                           \
-    /* tp_dealloc         */   (destructor)t_name##_dealloc,                \
+    /* tp_dealloc         */   (destructor) dealloc,                        \
     /* tp_print           */   0,                                           \
     /* tp_getattr         */   0,                                           \
     /* tp_setattr         */   0,                                           \
@@ -338,6 +352,7 @@ PyTypeObject name##Type_ = {                                            \
 
 #endif
 
+// used for structs and for classes without typeid() support
 #define INSTALL_STRUCT(name, module)                                   \
     if (PyType_Ready(&name##Type_) == 0)                               \
     {                                                                  \
@@ -355,8 +370,8 @@ PyTypeObject name##Type_ = {                                            \
 #define INSTALL_MODULE_INT(module, name)                               \
     PyModule_AddIntConstant(module, #name, name);
 
-#define INSTALL_STATIC_INT(type, name)                                      \
-    PyDict_SetItemString(type##Type_.tp_dict, #name,                        \
+#define INSTALL_STATIC_INT(type, name)                                 \
+    PyDict_SetItemString(type##Type_.tp_dict, #name,                   \
                          make_descriptor(PyInt_FromLong(type::name)))
 
 #define INSTALL_ENUM(type, name, value)                                 \

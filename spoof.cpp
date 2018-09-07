@@ -6,10 +6,10 @@
  * to deal in the Software without restriction, including without limitation
  * the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions: 
+ * Software is furnished to do so, subject to the following conditions:
  *
  * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software. 
+ * in all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -176,7 +176,7 @@ static PyObject *t_spoofchecker_setAllowedUnicodeSet(t_spoofchecker *self,
                                                      PyObject *arg)
 {
     const UnicodeSet *set;
-    
+
     if (!parseArg(arg, "P", TYPE_CLASSID(UnicodeSet), &set))
     {
         STATUS_CALL(uspoof_setAllowedUnicodeSet(self->object, set, &status));
@@ -240,18 +240,6 @@ static PyObject *t_spoofchecker_getSkeleton(t_spoofchecker *self,
       case 2:
         if (!parseArgs(args, "iS", &type, &u, &_u))
         {
-            class Buffer {
-            public:
-                explicit Buffer(int32_t len) :
-                    size(len), buffer(u.getBuffer(len)) {}
-                ~Buffer() {
-                    u.releaseBuffer(0);
-                }
-                UnicodeString u;
-                int32_t size;
-                UChar *buffer;
-            };
-
             const int32_t len = u->length();
             Buffer dest(len + 32);
 
@@ -259,24 +247,21 @@ static PyObject *t_spoofchecker_getSkeleton(t_spoofchecker *self,
             int32_t size =
                 uspoof_getSkeleton(self->object, type, u->getBuffer(), len,
                                    dest.buffer, dest.size, &status);
-            
-            switch (status) {
-              case 0:
+
+            if (!U_FAILURE(status))
                 return PyUnicode_FromUnicodeString(dest.buffer, size);
 
-              case U_BUFFER_OVERFLOW_ERROR: {
-                  Buffer dest(size);
+            if (status == U_BUFFER_OVERFLOW_ERROR) {
+                Buffer dest(size);
 
-                  STATUS_CALL(size = uspoof_getSkeleton(
-                                  self->object, type, u->getBuffer(), len,
-                                  dest.buffer, dest.size, &status));
+                STATUS_CALL(size = uspoof_getSkeleton(
+                                self->object, type, u->getBuffer(), len,
+                                dest.buffer, dest.size, &status));
 
-                  return PyUnicode_FromUnicodeString(dest.buffer, size);
-              }
-
-              default:
-                return ICUException(status).reportError();
+                return PyUnicode_FromUnicodeString(dest.buffer, size);
             }
+
+            return ICUException(status).reportError();
         }
     }
 

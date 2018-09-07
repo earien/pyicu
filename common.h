@@ -1,15 +1,15 @@
 /* ====================================================================
- * Copyright (c) 2005-2015 Open Source Applications Foundation.
+ * Copyright (c) 2005-2018 Open Source Applications Foundation.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation
  * the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions: 
+ * Software is furnished to do so, subject to the following conditions:
  *
  * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software. 
+ * in all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -159,6 +159,7 @@ typedef intintobjargproc ssizessizeobjargproc;
 #include <unicode/uchar.h>
 #include <unicode/uversion.h>
 #include <unicode/ushape.h>
+#include <unicode/ucasemap.h>
 
 #define VERSION_HEX(major, minor, patch) \
   (((major) << 24) | ((minor) << 16) | ((patch) << 8))
@@ -179,6 +180,9 @@ typedef intintobjargproc ssizessizeobjargproc;
 #include <unicode/tmutfmt.h>
 #include <unicode/currpinf.h>
 #include <unicode/uspoof.h>
+#include <unicode/tmunit.h>
+#include <unicode/tmutamt.h>
+#include <unicode/stringpiece.h>
 #endif
 
 #if U_ICU_VERSION_HEX >= 0x04040000
@@ -198,10 +202,25 @@ typedef intintobjargproc ssizessizeobjargproc;
 #include <unicode/compactdecimalformat.h>
 #include <unicode/unum.h>
 #include <unicode/udisplaycontext.h>
+#include <unicode/region.h>
 #endif
 
 #if U_ICU_VERSION_HEX >= VERSION_HEX(53, 0, 0)
 #include <unicode/reldatefmt.h>
+#endif
+
+#if U_ICU_VERSION_HEX >= VERSION_HEX(57, 0, 0)
+#include <unicode/simpleformatter.h>
+#endif
+
+#if U_ICU_VERSION_HEX >= VERSION_HEX(59, 0, 0)
+#include <unicode/casemap.h>
+#endif
+
+#if U_ICU_VERSION_HEX >= VERSION_HEX(60, 0, 0)
+#include <unicode/nounit.h>
+#include <unicode/numberformatter.h>
+#include <unicode/stringoptions.h>
 #endif
 
 #if U_ICU_VERSION_HEX < 0x04060000
@@ -225,6 +244,7 @@ enum {
     UnicodeMatcher_ID,
     SearchIterator_ID,
     ListFormatter_ID,
+    CaseMap_ID,
 };
 
 #else
@@ -256,6 +276,18 @@ extern PyObject *PyExc_ICUError;
 extern PyObject *PyExc_InvalidArgsError;
 
 void _init_common(PyObject *m);
+
+class Buffer {
+public:
+    explicit Buffer(int32_t len) :
+    size(len), buffer(u.getBuffer(len)) {}
+    ~Buffer() {
+        u.releaseBuffer(0);
+    }
+    UnicodeString u;
+    int32_t size;
+    UChar *buffer;
+};
 
 class ICUException {
 private:

@@ -1,7 +1,59 @@
-Version 1.9.7 ->
+Version 2.0.6 ->
+----------------------
+  - added wrapper for ULineBreak enum
+  - fixed crasher with pypy3 6.0
+  - 
+
+Version 2.0.5 -> 2.0.6
+----------------------
+  - fixed another build error with ICU < 62
+
+Version 2.0.4 -> 2.0.5
+----------------------
+  - fixed build error with ICU < 62
+  - added casemap.h to MANIFEST.in
+
+Version 2.0.3 -> 2.0.4
+----------------------
+  - added support for ICU 62.1
+  - added support for CaseMap (without Edits)
+
+Version 2.0.2 -> 2.0.3
+----------------------
+  - added wrappers for Region class and URegionType enum
+  - added wrappers for MeasureFormat.formatMeasure and formatMeasurePerUnit
+  - fixed build errors with ICU 59.1
+  - replaced occurrences of nullptr with NULL, -std=c++11 req'd w/only ICU >= 60
+
+Version 2.0.1 -> 2.0.2
+----------------------
+  - fixed build error with ICU < 53
+  
+Version 2.0 -> 2.0.1
+--------------------
+  - made Measure wrapper abstract when building with ICU < 53.1
+  - str(Measure) uses NumberFormatter when available
+  
+Version 1.9.8 -> 2.0
+--------------------
+  - use icu-config for configuring compiler and linker (Constantine Peresypkin)
+  - added wrappers for UBidiPairedBracketType enum
+  - added wrappers for UWordBreakValues enum
+  - added wrappers for UJoiningGroup enum
+  - added wrappers for 120+ MeasureUnit static factory methods
+  - added wrapper for NoUnit class
+  - added wrapper for TimeUnit class
+  - added missing Measure constructor(Formattable or number, MeasureUnit)
+  - added wrappers for NumberFormatter and related classes and enums, and tests
+  - added wrapper for SimpleFormatter and tests
+  - fixed bugs in test_LocaleData.py using undefined values (Fredrik Roubert)
+  - added wrapper for UMemory and made it UObject's base
+  - removed unused docs.py
+
+Version 1.9.7 -> 1.9.8
 ----------------------
   - fixed bugs in "UnicodeString as sequence"; it's a sequence of 16-bit UChar
-  - 
+  - added support for ICU 60.1
 
 Version 1.9.6 -> 1.9.7
 ----------------------

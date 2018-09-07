@@ -23,8 +23,10 @@ to each system's instructions for more information.
 
 PyICU is built with distutils or setuptools:
 
-   - verify that the ``INCLUDES``, ``LFLAGS``, ``CFLAGS`` and ``LIBRARIES``
-     dictionaries in ``setup.py`` contain correct values for your platform
+   - verify that the icu-config program is available or that the ``INCLUDES``,
+     ``LFLAGS``, ``CFLAGS`` and ``LIBRARIES`` dictionaries in ``setup.py``
+     contain correct values for your platform. Starting with ICU 60, -std=c++11
+     must appear in your CFLAGS.
    - ``python setup.py build``
    - ``sudo python setup.py install``
 
@@ -69,7 +71,7 @@ accept Python str or unicode type arguments. In the case of ``str``
 objects, the ``utf-8`` encoding is assumed when converting them to
 ``UnicodeString`` objects.
 
-To convert a Python ``str`` encoded in a encoding other than ``utf-8`` to
+To convert a Python ``str`` encoded in an encoding other than ``utf-8`` to
 an ICU ``UnicodeString`` use the ``UnicodeString(str, encodingName)``
 constructor.
 
